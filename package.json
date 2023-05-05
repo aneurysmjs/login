@@ -18,13 +18,17 @@
     }
   },
   "dependencies": {
+    "@vuelidate/core": "^2.0.2",
+    "@vuelidate/validators": "^2.0.2",
     "@vueuse/core": "9.13.0",
+    "vee-validate": "^4.8.6",
     "vue": "3.2.47",
     "vue-router": "4.1.6"
   },
   "devDependencies": {
     "@antfu/eslint-config": "0.38.4",
     "@iconify-json/carbon": "1.1.16",
+    "@iconify-json/svg-spinners": "^1.1.1",
     "@types/node": "18.15.11",
     "@unocss/eslint-config": "0.51.4",
     "@unocss/preset-wind": "^0.51.8",

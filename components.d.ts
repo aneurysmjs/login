@@ -9,10 +9,15 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    BaseLayout: typeof import('./src/components/BaseLayout.vue')['default']
+    BaseLoader: typeof import('./src/components/BaseLoader.vue')['default']
+    Loader: typeof import('./src/components/Loader.vue')['default']
+    LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheCounter: typeof import('./src/components/TheCounter.vue')['default']
     TheFooter: typeof import('./src/components/TheFooter.vue')['default']
     TheInput: typeof import('./src/components/TheInput.vue')['default']
+    TheLabel: typeof import('./src/components/TheLabel.vue')['default']
   }
 }
