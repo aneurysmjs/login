@@ -1,5 +1,5 @@
 <template>
-  <foote class="footer">
+  <footer class="footer">
     <nav class="footer__nav">
       <button icon-btn @click="toggleDark()">
         <div i-carbon-sun dark:i-carbon-moon />
@@ -13,7 +13,7 @@
         title="GitHub"
       />
     </nav>
-  </foote>
+  </footer>
 </template>
 
 <style>
