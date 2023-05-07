@@ -68,15 +68,10 @@ function handleClick() {
           class="login-form__input"
           name="email"
         >
-
         <span class="login-form__icon-user" />
       </div>
-      <p
-        v-for="error of v$.email.$errors"
-        :key="error.$uid"
-      >
-        <span class="login-form__invalid-field" data-testid="password-email-msg" role="alert">{{ error.$message }}</span>
-      </p>
+
+      <ErrorList :errors="v$.email.$errors" data-testid="password-email-msg" />
     </div>
     <div class="mb-4">
       <label for="password" class="login-form__label">Password</label>
@@ -94,12 +89,7 @@ function handleClick() {
           <span data-testid="eye-icon" :class="[isPasswordRevealed ? 'login-form__icon-eye-off' : 'login-form__icon-eye-on']" />
         </button>
       </div>
-      <p
-        v-for="error of v$.password.$errors"
-        :key="error.$uid"
-      >
-        <span class="login-form__invalid-field" data-testid="password-error-msg" role="alert">{{ error.$message }}</span>
-      </p>
+      <ErrorList :errors="v$.password.$errors" data-testid="password-error-msg" />
     </div>
     <div class="login-form__footer">
       <button
@@ -149,7 +139,6 @@ function handleClick() {
   @apply focus:border-teal-400 dark:focus:border-sky-400;
   @apply focus:ring-teal-400 dark:focus:ring-sky-400;
   @apply focus-visible:border-teal-500 dark:focus-visible:border-sky-400;
-
 }
 
 .login-form__submit {
@@ -165,10 +154,6 @@ function handleClick() {
 .login-form__forgot-password {
   @apply inline-block align-baseline text-sm font-bold  hover:text-blue-800 cursor: pointer;
   @apply text-teal-500 dark:text-sky;
-}
-
-.login-form__invalid-field {
-  @apply text-xs italic text-red-500 mt-2;
 }
 
 .login-form__loading {
