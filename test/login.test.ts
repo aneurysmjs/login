@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import LoginForm from '../src/components/LoginForm.vue'
 
-import { byTestId } from './utils'
+import { byAriaLabel, byTestId } from './utils'
 
 describe('LoginForm', () => {
   it('submits form when all fields are valid', async () => {
@@ -67,7 +67,7 @@ describe('LoginForm', () => {
   it('toggles between types "text" and "password"', async () => {
     const wrapper = mount(LoginForm)
     const passwordInput = wrapper.find(byTestId('password'))
-    const revealPasswordButton = wrapper.find(byTestId('reveal-password'))
+    const revealPasswordButton = wrapper.find(byAriaLabel('reveal-password'))
     const eyeIcon = wrapper.find(byTestId('eye-icon'))
 
     expect(passwordInput.attributes('type')).toBe('password')

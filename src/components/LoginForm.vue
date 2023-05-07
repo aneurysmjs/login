@@ -90,7 +90,7 @@ function handleClick() {
           class="login-form__input"
           name="password"
         >
-        <button type="button" class="login-form__reveal-password" data-testid="reveal-password" @click="handleClick">
+        <button type="button" class="login-form__reveal-password" aria-label="reveal-password" @click="handleClick">
           <span data-testid="eye-icon" :class="[isPasswordRevealed ? 'login-form__icon-eye-off' : 'login-form__icon-eye-on']" />
         </button>
       </div>
