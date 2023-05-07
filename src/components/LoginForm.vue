@@ -133,11 +133,11 @@ function handleClick() {
 }
 
 .login-form__sign-in-text {
-  @apply text-gray-600 dark:text-gray-400 mb-4 text-center;
+  @apply text-gray-600 dark:text-gray-300 mb-4 text-center;
 }
 
 .login-form__label {
-  @apply mb-2 inline-block text-gray-500;
+  @apply mb-2 inline-block text-gray-300;
 }
 
 .login-form__input {
