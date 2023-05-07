@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <nav class="footer__nav">
-      <button icon-btn @click="toggleDark()">
+      <button icon-btn aria-label="toggle theme" @click="toggleDark()">
         <div i-carbon-sun dark:i-carbon-moon />
       </button>
 
