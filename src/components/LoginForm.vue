@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { Form } from 'vee-validate'
 import { email, minLength } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
+
+import { login } from '~/services/authService'
 
 const initialState = {
   email: '',
@@ -9,6 +10,8 @@ const initialState = {
 }
 
 const state = reactive({ ...initialState })
+const isPasswordRevealed = ref(false)
+const passwordInputRef = ref<HTMLInputElement | null>(null)
 
 const rules = computed(() => ({
   email: { email },
@@ -22,20 +25,31 @@ function resetForm() {
   v$.$reset()
 }
 
-function handleSubmit() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ ok: true })
+function submit() {
+  return login().finally(resetForm)
+}
 
-      resetForm()
+const { isSubmitting, submitForm } = useFormSubmission(submit)
+
+function handleClick() {
+  // we just toggle when password revealed or not
+  isPasswordRevealed.value = !isPasswordRevealed.value
+
+  nextTick(() => {
+    // when toggling password revealing, we loose focus on the input
+    // so to not loose UX, we make sure that the cursor is at the end.
+    if (passwordInputRef.value) {
+      const end = passwordInputRef.value.value.length
+      // here we put the cursor at the end of the input.
+      passwordInputRef.value.setSelectionRange(end, end)
+      passwordInputRef.value.focus()
     }
-    , 1500)
   })
 }
 </script>
 
 <template>
-  <Form v-slot="{ isSubmitting }" class="login-form" @submit="handleSubmit">
+  <form class="login-form" @submit.prevent="submitForm">
     <h2 class="login-form__title">
       Login
     </h2>
@@ -45,44 +59,54 @@ function handleSubmit() {
 
     <div class="mb-4">
       <label for="email" class="login-form__label">Email</label>
-      <input
-        id="email"
-        v-model="v$.email.$model"
-        data-testid="email"
-        type="email"
-        class="login-form__input"
-        autocomplete="off"
-      >
+      <div class="login-form__control">
+        <input
+          id="email"
+          v-model="v$.email.$model"
+          data-testid="email"
+          type="email"
+          class="login-form__input"
+          name="email"
+        >
+
+        <span class="login-form__icon-user" />
+      </div>
       <p
         v-for="error of v$.email.$errors"
         :key="error.$uid"
       >
-        <span class="login-form__invalid-field" data-testid="password-email-msg">{{ error.$message }}</span>
+        <span class="login-form__invalid-field" data-testid="password-email-msg" role="alert">{{ error.$message }}</span>
       </p>
     </div>
     <div class="mb-4">
       <label for="password" class="login-form__label">Password</label>
-      <input
-        id="password"
-        v-model="v$.password.$model"
-        data-testid="password"
-        type="password"
-        class="login-form__input"
-      >
+      <div class="login-form__control">
+        <input
+          id="password"
+          ref="passwordInputRef"
+          v-model="v$.password.$model"
+          data-testid="password"
+          :type="isPasswordRevealed ? 'text' : 'password'"
+          class="login-form__input"
+          name="password"
+        >
+        <button type="button" class="login-form__reveal-password" data-testid="reveal-password" @click="handleClick">
+          <span data-testid="eye-icon" :class="[isPasswordRevealed ? 'login-form__icon-eye-off' : 'login-form__icon-eye-on']" />
+        </button>
+      </div>
       <p
         v-for="error of v$.password.$errors"
         :key="error.$uid"
       >
-        <span class="login-form__invalid-field" data-testid="password-error-msg">{{ error.$message }}</span>
+        <span class="login-form__invalid-field" data-testid="password-error-msg" role="alert">{{ error.$message }}</span>
       </p>
     </div>
-    <div class="flex items-center justify-between">
+    <div class="login-form__footer">
       <button
         :disabled="isSubmitting || v$.$invalid || !v$.$dirty"
         class="login-form__submit" :class="[{ 'login-form__submit--disabled': isSubmitting || v$.$invalid || !v$.$dirty }]"
-        type="submit"
         data-testid="submit"
-        @submit="handleSubmit"
+        @submit="submitForm"
       >
         Submit
       </button>
@@ -99,7 +123,7 @@ function handleSubmit() {
 
 <style scoped>
 .login-form {
-  @apply max-w-md w-full rounded-lg p-8 shadow-lg;
+  @apply  max-w-sm w-full rounded-lg p-8 shadow-lg;
   @apply bg-white dark:bg-gray-800;
 }
 
@@ -109,33 +133,33 @@ function handleSubmit() {
 }
 
 .login-form__sign-in-text {
-  @apply text-gray-900 dark:text-gray-400 mb-4 text-center;
+  @apply text-gray-600 dark:text-gray-400 mb-4 text-center;
 }
 
 .login-form__label {
-  @apply mb-2 block text-gray-500;
+  @apply mb-2 inline-block text-gray-500;
 }
 
 .login-form__input {
-  @apply w-full appearance-none border rounded px-3 py-2 leading-tight shadow border-transparent;
+  @apply w-full appearance-none border rounded leading-tight shadow border-transparent focus-outline-none;
   @apply bg-gray-100 dark:bg-gray-700;
-
+  @apply pl-3 pr-8 py-2;
   @apply placeholder:text-gray-800 dark:placeholder:text-gray-300;
 
-  @apply focus:border-teal-400 dark:focus:border-sky-400 focus-visible:border-teal-500 dark:focus-visible:border-sky-400;
+  @apply focus:border-teal-400 dark:focus:border-sky-400;
   @apply focus:ring-teal-400 dark:focus:ring-sky-400;
+  @apply focus-visible:border-teal-500 dark:focus-visible:border-sky-400;
 
-  @apply focus-outline-none;
 }
 
 .login-form__submit {
-  @apply focus:shadow-outline rounded px-4 py-2 font-bold text-white  focus:outline-none;
+  @apply focus:shadow-outline rounded px-4 py-2 font-bold text-white focus:outline-none;
   @apply bg-teal-500 dark:bg-sky;
-  @apply hover:bg-teal-600 dark:hover:bg-sky-800
+  @apply hover:bg-teal-600 dark:hover:bg-sky-800 ;
 }
 
 .login-form__submit--disabled {
-  @apply disabled:bg-teal-400 dark:disabled:bg-sky-4 cursor-not-allowed;
+  @apply disabled:opacity-75 disabled:pointer-events-none cursor-not-allowed ;
 }
 
 .login-form__forgot-password {
@@ -149,5 +173,39 @@ function handleSubmit() {
 
 .login-form__loading {
   @apply flex items-center;
+}
+
+.login-form__footer {
+  @apply flex items-center justify-between;
+}
+
+.login-form__control {
+  @apply relative;
+}
+
+.login-form__icon-user {
+  @apply i-carbon-user block absolute top-2 right-2;
+}
+
+.login-form__icon-eye {
+  @apply block absolute right-2;
+  top: 0.6rem;
+}
+
+.login-form__icon-eye-on {
+  @apply i-carbon-view block absolute right-2;
+
+  top: 0.6rem;
+}
+
+.login-form__icon-eye-off {
+  @apply i-carbon-view-off block absolute right-2;
+
+  top: 0.6rem;
+}
+
+.login-form__reveal-password {
+  all: unset;
+  cursor: pointer;
 }
 </style>
