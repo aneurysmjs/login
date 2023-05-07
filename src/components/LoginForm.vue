@@ -137,7 +137,7 @@ function handleClick() {
 }
 
 .login-form__label {
-  @apply mb-2 inline-block text-gray-300;
+  @apply mb-2 inline-block text-gray-500 dark:text-gray-300;
 }
 
 .login-form__input {
