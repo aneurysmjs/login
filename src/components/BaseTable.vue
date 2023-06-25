@@ -20,7 +20,7 @@ const { table, fullWidth = false, stripped = false } = defineProps<BaseTableProp
       'base-table--full-width': fullWidth,
     }"
   >
-    <thead>
+    <thead class="base-table__thead">
       <tr
         v-for="headerGroup in table.getHeaderGroups()"
         :key="headerGroup.id"
@@ -64,7 +64,11 @@ const { table, fullWidth = false, stripped = false } = defineProps<BaseTableProp
 
 <style>
 .base-table {
-  @appy min-w-full divide-y divide-gray-700 dark:divide-gray-2;
+  @apply min-w-full divide-y divide-gray-700 dark:divide-gray-2 ;
+}
+
+.base-table__thead {
+  @apply bg-gray-50 dark:bg-gray-700;
 }
 
 .base-table--stripped {
@@ -80,7 +84,7 @@ const { table, fullWidth = false, stripped = false } = defineProps<BaseTableProp
 }
 
 .base-table__th {
-  @apply px-3 py-3.5 text-left text-sm font-semibold text-white;
+  @apply px-3 py-3.5 text-left text-sm font-semibold text-theme;
 }
 
 .base-table__td {
