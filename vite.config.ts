@@ -2,7 +2,7 @@
 
 import path from 'node:path'
 import { defineConfig } from 'vite'
-import Vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue'
 import Pages from 'vite-plugin-pages'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -16,10 +16,22 @@ export default defineConfig({
     },
   },
   plugins: [
+    // vue({
+    //   script: {
+    //     // This feature is experimental and requires explicit opt-in.
+    //     // https://github.com/vuejs/rfcs/discussions/502
+    //     propsDestructure: true,
+    //     defineModel: true,
+    //   },
+    // }),
     VueMacros({
       plugins: {
-        vue: Vue({
+        vue: vue({
           reactivityTransform: true,
+          script: {
+            defineModel: true,
+            propsDestructure: true,
+          },
         }),
       },
     }),
