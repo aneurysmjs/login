@@ -15,12 +15,7 @@ interface BaseSelectProps {
 
 const props = defineProps<BaseSelectProps>()
 
-const defaultSelected = ref(props.options[0].value !== ''
-  ? props.options[0]
-  : {
-      id: props.options[0].id,
-      value: 'Select some shit',
-    })
+const defaultSelected = ref(props.options[0])
 </script>
 
 <template>
@@ -28,7 +23,7 @@ const defaultSelected = ref(props.options[0].value !== ''
     <ListboxLabel v-if="props.label !== ''" class="base-select__label">
       {{ label }}
     </ListboxLabel>
-    <div class="relative mt-2">
+    <div class="relative">
       <ListboxButton class="base-select__button">
         <span class="block truncate">{{ defaultSelected.value }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
