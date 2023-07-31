@@ -261,8 +261,10 @@ declare global {
   const useToggle: typeof import('@vueuse/core')['useToggle']
   const useTransition: typeof import('@vueuse/core')['useTransition']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
+  const useUserColumns: typeof import('./src/composables/useUsersColumns')['useUserColumns']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
   const useUserQueries: typeof import('./src/composables/useUserQueries')['default']
+  const useUsersColumns: typeof import('./src/composables/useUsersColumns')['default']
   const useVModel: typeof import('@vueuse/core')['useVModel']
   const useVModels: typeof import('@vueuse/core')['useVModels']
   const useVibrate: typeof import('@vueuse/core')['useVibrate']
@@ -559,6 +561,7 @@ declare module 'vue' {
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
     readonly useUserQueries: UnwrapRef<typeof import('./src/composables/useUserQueries')['default']>
+    readonly useUsersColumns: UnwrapRef<typeof import('./src/composables/useUsersColumns')['default']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>
@@ -849,6 +852,7 @@ declare module '@vue/runtime-core' {
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
     readonly useUserQueries: UnwrapRef<typeof import('./src/composables/useUserQueries')['default']>
+    readonly useUsersColumns: UnwrapRef<typeof import('./src/composables/useUsersColumns')['default']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>

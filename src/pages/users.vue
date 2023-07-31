@@ -1,25 +1,14 @@
 <script setup lang="ts">
-import type { ColumnFiltersState, FilterFn } from '@tanstack/vue-table'
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useVueTable,
-} from '@tanstack/vue-table'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
-import type { Person } from '../composables/useUserQueries'
-import useUserQueries from '../composables/useUserQueries'
-import useDebounce from '../composables/useDebounce'
-import manageFilters from '~/utils/manageFilters'
+import useUserQueries from '~/composables/useUserQueries'
+import useDebounce from '~/composables/useDebounce'
+import useUserTables from '~/composables/useUsersTable'
 
 const { getUsers } = useUserQueries()
 
 const enabled = ref(false)
 const { data: users } = getUsers(enabled)
-const shouldTrigger = computed(() => users.value && enabled.value)
-
-const columnHelper = createColumnHelper<Person>()
 
 const statuses = [
   { id: 0, value: 'Select status' },
@@ -27,83 +16,17 @@ const statuses = [
   { id: 2, value: 'Inactive' },
 ]
 
-const filterStatus: FilterFn<Person> = (row, columnId, value) => {
-  return row.getValue(columnId) === value
-}
-
-const columns = [
-  columnHelper.accessor('firstName', {
-    cell: info => info.getValue(),
-
-    enableColumnFilter: true,
-    filterFn: 'includesString',
-  }),
-  columnHelper.accessor(row => row.lastName, {
-    id: 'lastName',
-    cell: info => info.getValue(),
-    header: () => 'Last Name',
-  }),
-  columnHelper.accessor('age', {
-    header: () => 'Age',
-  }),
-  columnHelper.accessor('visits', {
-    header: () => 'Visits',
-  }),
-  columnHelper.accessor('status', {
-    header: 'Status',
-    enableColumnFilter: true,
-    filterFn: filterStatus,
-  }),
-  columnHelper.accessor('progress', {
-    header: 'Profile Progress',
-  }),
-]
-
-const data = computed(() => users.value || [])
-
 function rerender() {
   // data.value = defaultData
 }
 
 const searchValue = ref('')
 
-const columnFilters = ref<ColumnFiltersState>([])
-
-declare module '@tanstack/table-core' {
-  interface FilterFns {
-    filterStatus: FilterFn<Person>
-  }
-}
-
-const table = useVueTable({
-  get data() {
-    return data.value
-  },
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
-  filterFns: {
-    filterStatus,
-  },
-  state: {
-    get columnFilters() {
-      return columnFilters.value
-    },
-  },
-})
-
-function handlerFilterStatus({ value }: { id: string; value: string }) {
-  const id = 'status'
-
-  manageFilters({ id, value, columnFilters, resetValue: statuses[0].value })
-}
-
-function handleFilterFirstName(evt: Event) {
-  const id = 'firstName'
-  const { value } = evt.target as HTMLInputElement
-
-  manageFilters({ id, value, columnFilters })
-}
+const {
+  table,
+  handlerFilterStatus,
+  handleFilterFirstName,
+} = useUserTables(users)
 
 const debouncedHandler = useDebounce(handleFilterFirstName)
 
@@ -118,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="p-2">
+  <div class="users">
     <div class="users__filters">
       <input
         v-model="searchValue"
@@ -140,6 +63,11 @@ onMounted(() => {
 </template>
 
 <style>
+.users {
+  @apply w-2/3;
+  margin: 0 auto;
+}
+
 .search-input {
   @apply base-input max-w-60 mr-4;
 }
