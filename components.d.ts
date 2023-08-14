@@ -13,6 +13,7 @@ declare module 'vue' {
     BaseTable: typeof import('./src/components/BaseTable.vue')['default']
     ErrorList: typeof import('./src/components/ErrorList.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
+    ResizeHandle: typeof import('./src/components/ResizeHandle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheCounter: typeof import('./src/components/TheCounter.vue')['default']

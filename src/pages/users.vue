@@ -53,7 +53,7 @@ onMounted(() => {
 
       <BaseSelect class="w-60" :options="statuses" @update:model-value="handlerFilterStatus" />
     </div>
-    <BaseTable full-width stripped :table="table" />
+    <BaseTable stripped :table="table" column-sizing />
     <div class="h-4" />
     <button class="border p-2" @click="rerender">
       Rerender

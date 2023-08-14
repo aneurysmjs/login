@@ -1,70 +1,97 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="T">
 import {
   FlexRender,
   type Table,
 } from '@tanstack/vue-table'
+import useTableUtils from '~/composables/useTableUtils'
 
 interface BaseTableProps {
-  table: Table<any>
+  table: Table<T>
   fullWidth?: boolean
+  columnSizing?: boolean
   stripped?: boolean
 }
 
-const { table, fullWidth = false, stripped = false } = defineProps<BaseTableProps>()
+const {
+  table,
+  fullWidth = false,
+  stripped = false,
+  columnSizing = false,
+} = defineProps<BaseTableProps>()
+
+const { getTableWidth } = useTableUtils()
 </script>
 
 <template>
-  <table
-    class="base-table"
-    :class="{
-      'base-table--full-width': fullWidth,
-    }"
-  >
-    <thead class="base-table__thead">
-      <tr
-        v-for="headerGroup in table.getHeaderGroups()"
-        :key="headerGroup.id"
-      >
-        <th
-          v-for="header in headerGroup.headers"
-          :key="header.id"
-          :colSpan="header.colSpan"
-          scope="col"
-          class="base-table__th"
-          :class="[]"
+  <div class="base-table__wrapper">
+    <table
+      class="base-table"
+      :class="{
+        'base-table--full-width': fullWidth,
+        'base-table--fixed': columnSizing,
+      }"
+      :style="getTableWidth<T>(table)"
+    >
+      <thead class="base-table__thead">
+        <tr
+          v-for="headerGroup in table.getHeaderGroups()"
+          :key="headerGroup.id"
         >
-          <FlexRender
-            v-if="!header.isPlaceholder"
-            :render="header.column.columnDef.header"
-            :props="header.getContext()"
-          />
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="row in table.getRowModel().rows" :key="row.id" :class="{
-          'base-table--stripped': stripped,
-        }"
-      >
-        <td
-          v-for="cell in row.getVisibleCells()"
-          :key="cell.id"
-          class="base-table__td"
+          <th
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            :colSpan="header.colSpan"
+            scope="col"
+            class="base-table__th relative"
+            :class="[]"
+            :style="{
+              width: `${header.getSize()}px`,
+            }"
+          >
+            <FlexRender
+              v-if="!header.isPlaceholder"
+              :render="header.column.columnDef.header"
+              :props="header.getContext()"
+            />
+            <ResizeHandle
+              v-if="header.column.getCanResize()"
+              :header="header"
+            />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="row in table.getRowModel().rows" :key="row.id" :class="{
+            'base-table--stripped': stripped,
+          }"
         >
-          <FlexRender
-            :render="cell.column.columnDef.cell"
-            :props="cell.getContext()"
-          />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <td
+            v-for="cell in row.getVisibleCells()"
+            :key="cell.id"
+            class="base-table__td"
+            :style=" {
+              width: `${cell.column.getSize()}px`,
+            }"
+          >
+            <FlexRender
+              :render="cell.column.columnDef.cell"
+              :props="cell.getContext()"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style>
 .base-table {
-  @apply min-w-full divide-y divide-gray-700 dark:divide-gray-2 ;
+  @apply  divide-y divide-gray-700 dark:divide-gray-2 ;
+}
+
+.base-table--fixed {
+  @apply table-fixed;
 }
 
 .base-table__thead {
