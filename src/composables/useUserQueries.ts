@@ -101,7 +101,7 @@ export default function useUserQueries() {
       queryFn: (): Promise<Person[]> => new Promise((resolve) => {
         setTimeout(() => {
           resolve(defaultData)
-        }, 1500)
+        }, 1)
       }),
       //  select: res => res.data,
       refetchOnWindowFocus: false,

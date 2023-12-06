@@ -1,5 +1,7 @@
 import type {
+  ColumnFilter,
   ColumnFilterAutoRemoveTestFn,
+  ColumnFiltersState,
 } from '@tanstack/vue-table'
 
 export function autoRemoveWhen<T>(value: any) {
@@ -10,9 +12,7 @@ export function autoRemoveWhen<T>(value: any) {
   return autoRemove
 }
 
-interface Item { id: string; value: string }
-
-export function manageTableFilters(arr: Item[], newItem: Item, shouldRemove?: (item: Item) => boolean): Item[] {
+export function manageTableFilters(arr: ColumnFiltersState, newItem: ColumnFilter, shouldRemove?: (item: ColumnFilter) => boolean): ColumnFiltersState {
   // Check if an item with the same ID already exists in the array
   const existingItemIndex = arr.findIndex(item => item.id === newItem.id)
 

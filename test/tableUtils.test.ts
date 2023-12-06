@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { manageTableFilters } from '../src/utils/tableUtils'
 
-// Import the function to be tested
-
 describe('tableUtils', () => {
   describe('manageTableFilters', () => {
     let initialArray: { id: string; value: string }[]
