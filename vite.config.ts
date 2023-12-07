@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   plugins: [
+
     // vue({
     //   script: {
     //     // This feature is experimental and requires explicit opt-in.
@@ -50,6 +51,7 @@ export default defineConfig({
       dts: true,
       dirs: [
         './src/composables',
+        './src/utils',
       ],
       vueTemplate: true,
     }),
