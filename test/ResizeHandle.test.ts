@@ -1,10 +1,11 @@
-import { describe, expect, it, vi } from 'vitest'
+import type { Header } from '@tanstack/vue-table'
 import { fireEvent, render } from '@testing-library/vue'
-import { type Header } from '@tanstack/vue-table'
+import { describe, expect, it, vi } from 'vitest'
 
 import ResizeHandle from '../src/components/LoginForm.vue'
 
 // Helper function to update column size by delta
+// eslint-disable-next-line unused-imports/no-unused-vars
 function updateColumnSizeBy<T>(header: Header<T, unknown>, delta: number) {
   header.getContext().table.setColumnSizing((prev) => {
     // Replace with actual maxSize and minSize values or mock them
@@ -17,7 +18,7 @@ function updateColumnSizeBy<T>(header: Header<T, unknown>, delta: number) {
   })
 }
 
-describe('ResizeHandle', () => {
+describe('resizeHandle', () => {
   it('should update column size when arrow keys are pressed', async () => {
     const header = {
       id: 'column_id',

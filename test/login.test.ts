@@ -4,7 +4,7 @@ import LoginForm from '../src/components/LoginForm.vue'
 
 import { byAriaLabel, byTestId } from './utils'
 
-describe('LoginForm', () => {
+describe('<LoginForm />', () => {
   it('submits form when all fields are valid', async () => {
     const wrapper = mount(LoginForm)
 

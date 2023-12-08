@@ -64,7 +64,7 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
 
   const emptyArray = ref([])
 
-  function handlerFilterStatus({ value }: { id: string; value: string }) {
+  function handlerFilterStatus({ value }: { id: string, value: string }) {
     const id = 'status'
 
     manageFilters({ id, value, columnFilters, resetValue: statuses[0].value })
