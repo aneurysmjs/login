@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@8.2.0",
   "scripts": {
+    "analize": "npx vite-bundle-visualizer",
     "commit": "git-cz",
     "build": "vite build",
     "dev": "vite --port 3333 --open",
