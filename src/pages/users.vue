@@ -5,30 +5,64 @@ import useUserQueries from '~/composables/useUserQueries'
 import useDebounce from '~/composables/useDebounce'
 import useUserTables from '~/composables/useUsersTable'
 
+import { manageTableFilters } from '~/utils/tableUtils'
+
 const { getUsers } = useUserQueries()
 
 const enabled = ref(false)
 const { data: users } = getUsers(enabled)
 
 const statuses = [
-  { id: 0, value: 'Select status' },
-  { id: 1, value: 'Active' },
-  { id: 2, value: 'Inactive' },
+  { id: 'status', value: 'Select status' },
+  { id: 'status', value: 'Active' },
+  { id: 'status', value: 'Inactive' },
 ]
 
-function rerender() {
-  // data.value = defaultData
-}
+const profileProgress = [
+  { id: 'progress', value: 'Select progress' },
+  { id: 'progress', value: '0.8' },
+  { id: 'progress', value: '0.5' },
+]
 
 const searchValue = ref('')
 
 const {
   table,
-  handlerFilterStatus,
+  // handlerFilterStatus,
   handleFilterFirstName,
 } = useUserTables(users)
 
 const debouncedHandler = useDebounce(handleFilterFirstName)
+
+// function columnFiltersUpdater(obj: { id: string; value: string }) {
+//   const updater: Updater<ColumnFiltersState> = (prev) => {
+//     return [{
+//       id: obj.id,
+//       value:
+//     }]
+//   }
+
+//   return updater
+// }
+
+function handleFilterProgress(obj: { id: string, value: string }) {
+  table.setColumnFilters((prev) => {
+    const progressValue = Number.parseFloat(obj.value)
+
+    const columnFilter = {
+      id: obj.id,
+      value: Number.isNaN(progressValue) ? profileProgress[0].value : progressValue,
+    }
+
+    return manageTableFilters(prev, columnFilter, item => item.value === profileProgress[0].value)
+  })
+}
+
+function handlerFilterStatus(obj: { id: string, value: string }) {
+  table.setColumnFilters((prev) => {
+    return manageTableFilters(prev, obj)
+  })
+}
 
 // cancel any pending executions
 onBeforeUnmount(() => {
@@ -56,6 +90,12 @@ onMounted(() => {
         :options="statuses"
         @update:model-value="handlerFilterStatus"
       />
+
+      <BaseSelect
+        class="w-60"
+        :options="profileProgress"
+        @update:model-value="handleFilterProgress"
+      />
     </div>
     <BaseTable
       stripped
@@ -63,14 +103,11 @@ onMounted(() => {
       column-sizing
     />
     <div class="h-4" />
-    <button
-      class="border p-2"
-      @click="rerender"
-    >
+    <button class="border p-2">
       Rerender
     </button>
   </div>
-  <pre>{{ JSON.stringify(table.getState().columnFilters, null, 2) }}</pre>
+  <pre>{{ JSON.stringify(table.getState(), null, 2) }}</pre>
 </template>
 
 <style>
