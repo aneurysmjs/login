@@ -8,6 +8,7 @@
   // Auto fix
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true,
     "source.organizeImports": "never"
   },
   // Silent the stylistic rules in you IDE, but still auto fix them
@@ -62,5 +63,11 @@
     "json",
     "jsonc",
     "yaml"
-  ]
+  ],
+  "stylelint.validate": [
+    "vue"
+  ],
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false
 }
