@@ -3,11 +3,14 @@
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import Pages from 'vite-plugin-pages'
+
+// import Pages from 'vite-plugin-pages'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
+import VueRouter from 'unplugin-vue-router/vite'
+import { VueRouterAutoImports } from 'unplugin-vue-router'
 
 export default defineConfig({
   resolve: {
@@ -16,7 +19,9 @@ export default defineConfig({
     },
   },
   plugins: [
-
+    VueRouter({
+      /* options */
+    }),
     // vue({
     //   script: {
     //     // This feature is experimental and requires explicit opt-in.
@@ -37,15 +42,12 @@ export default defineConfig({
       },
     }),
 
-    // https://github.com/hannoeru/vite-plugin-pages
-    Pages(),
-
     // https://github.com/antfu/unplugin-auto-import
     AutoImport({
       imports: [
         'vue',
         'vue/macros',
-        'vue-router',
+        VueRouterAutoImports,
         '@vueuse/core',
       ],
       dts: true,
