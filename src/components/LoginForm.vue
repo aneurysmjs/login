@@ -22,6 +22,7 @@ const v$ = useVuelidate(rules, state)
 
 function resetForm() {
   Object.assign(state, initialState)
+  // @ts-expect-error not part of typings
   v$.$reset()
 }
 
@@ -49,7 +50,10 @@ function handleClick() {
 </script>
 
 <template>
-  <form class="login-form" @submit.prevent="submitForm">
+  <form
+    class="login-form"
+    @submit.prevent="submitForm"
+  >
     <h2 class="login-form__title">
       Login
     </h2>
@@ -58,7 +62,12 @@ function handleClick() {
     </p>
 
     <div class="mb-4">
-      <label for="email" class="login-form__label">Email</label>
+      <label
+        for="email"
+        class="login-form__label"
+      >
+        Email
+      </label>
       <div class="login-form__control">
         <input
           id="email"
@@ -71,10 +80,18 @@ function handleClick() {
         <span class="login-form__icon-user" />
       </div>
 
-      <ErrorList :errors="v$.email.$errors" data-testid="password-email-msg" />
+      <ErrorList
+        :errors="v$.email.$errors"
+        data-testid="password-email-msg"
+      />
     </div>
     <div class="mb-4">
-      <label for="password" class="login-form__label">Password</label>
+      <label
+        for="password"
+        class="login-form__label"
+      >
+        Password
+      </label>
       <div class="login-form__control">
         <input
           id="password"
@@ -85,16 +102,28 @@ function handleClick() {
           class="login-form__input"
           name="password"
         >
-        <button type="button" class="login-form__reveal-password" aria-label="reveal-password" @click="handleClick">
-          <span data-testid="eye-icon" :class="[isPasswordRevealed ? 'login-form__icon-eye-off' : 'login-form__icon-eye-on']" />
+        <button
+          type="button"
+          class="login-form__reveal-password"
+          aria-label="reveal-password"
+          @click="handleClick"
+        >
+          <span
+            data-testid="eye-icon"
+            :class="[isPasswordRevealed ? 'login-form__icon-eye-off' : 'login-form__icon-eye-on']"
+          />
         </button>
       </div>
-      <ErrorList :errors="v$.password.$errors" data-testid="password-error-msg" />
+      <ErrorList
+        :errors="v$.password.$errors"
+        data-testid="password-error-msg"
+      />
     </div>
     <div class="login-form__footer">
       <button
         :disabled="isSubmitting || v$.$invalid || !v$.$dirty"
-        class="login-form__submit" :class="[{ 'login-form__submit--disabled': isSubmitting || v$.$invalid || !v$.$dirty }]"
+        class="login-form__submit"
+        :class="[{ 'login-form__submit--disabled': isSubmitting || v$.$invalid || !v$.$dirty }]"
         data-testid="submit"
         @submit="submitForm"
       >
@@ -113,7 +142,7 @@ function handleClick() {
 
 <style scoped>
 .login-form {
-  @apply  max-w-sm w-full rounded-lg p-8 shadow-lg;
+  @apply max-w-sm w-full rounded-lg p-8 shadow-lg;
   @apply bg-white dark:bg-gray-800;
 }
 
@@ -144,15 +173,15 @@ function handleClick() {
 .login-form__submit {
   @apply focus:shadow-outline rounded px-4 py-2 font-bold text-white focus:outline-none;
   @apply bg-teal-500 dark:bg-sky;
-  @apply hover:bg-teal-600 dark:hover:bg-sky-800 ;
+  @apply hover:bg-teal-600 dark:hover:bg-sky-800;
 }
 
 .login-form__submit--disabled {
-  @apply disabled:opacity-75 disabled:pointer-events-none cursor-not-allowed ;
+  @apply disabled:opacity-75 disabled:pointer-events-none cursor-not-allowed;
 }
 
 .login-form__forgot-password {
-  @apply inline-block align-baseline text-sm font-bold  hover:text-blue-800 cursor: pointer;
+  @apply inline-block align-baseline text-sm font-bold hover:text-blue-800 cursor: pointer;
   @apply text-teal-500 dark:text-sky;
 }
 

@@ -1,5 +1,5 @@
-import { type Ref } from 'vue'
-import { type ColumnFilter } from '@tanstack/vue-table'
+import type { Ref } from 'vue'
+import type { ColumnFilter } from '@tanstack/vue-table'
 
 interface ManageFiltersOptions {
   id: string

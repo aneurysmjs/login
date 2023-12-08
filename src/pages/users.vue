@@ -45,7 +45,7 @@ const debouncedHandler = useDebounce(handleFilterFirstName)
 //   return updater
 // }
 
-function handleFilterProgress(obj: { id: string; value: string }) {
+function handleFilterProgress(obj: { id: string, value: string }) {
   table.setColumnFilters((prev) => {
     const progressValue = Number.parseFloat(obj.value)
 
@@ -58,7 +58,7 @@ function handleFilterProgress(obj: { id: string; value: string }) {
   })
 }
 
-function handlerFilterStatus(obj: { id: string; value: string }) {
+function handlerFilterStatus(obj: { id: string, value: string }) {
   table.setColumnFilters((prev) => {
     return manageTableFilters(prev, obj)
   })
@@ -85,11 +85,23 @@ onMounted(() => {
         @input="debouncedHandler"
       >
 
-      <BaseSelect class="w-60" :options="statuses" @update:model-value="handlerFilterStatus" />
+      <BaseSelect
+        class="w-60"
+        :options="statuses"
+        @update:model-value="handlerFilterStatus"
+      />
 
-      <BaseSelect class="w-60" :options="profileProgress" @update:model-value="handleFilterProgress" />
+      <BaseSelect
+        class="w-60"
+        :options="profileProgress"
+        @update:model-value="handleFilterProgress"
+      />
     </div>
-    <BaseTable stripped :table="table" column-sizing />
+    <BaseTable
+      stripped
+      :table="table"
+      column-sizing
+    />
     <div class="h-4" />
     <button class="border p-2">
       Rerender

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ErrorObject } from '@vuelidate/core'
+import type { ErrorObject } from '@vuelidate/core'
 
 const props = defineProps<{
   errors: ErrorObject[]
@@ -15,7 +15,13 @@ const attrs = useAttrs()
       :key="error.$uid"
       class="mt-2"
     >
-      <span v-bind="attrs" class="error-list__message" role="alert">{{ error.$message }}</span>
+      <span
+        v-bind="attrs"
+        class="error-list__message"
+        role="alert"
+      >
+        {{ error.$message }}
+      </span>
     </li>
   </ul>
 </template>

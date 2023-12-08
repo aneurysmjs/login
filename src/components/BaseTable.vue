@@ -62,7 +62,9 @@ const { getTableWidth } = useTableUtils()
       </thead>
       <tbody>
         <tr
-          v-for="row in table.getRowModel().rows" :key="row.id" :class="{
+          v-for="row in table.getRowModel().rows"
+          :key="row.id"
+          :class="{
             'base-table--stripped': stripped,
           }"
         >
