@@ -1,11 +1,18 @@
-import { fileURLToPath } from 'node:url'
 import antfu from '@antfu/eslint-config'
+import unocss from '@unocss/eslint-config/flat'
 
-const dirName = fileURLToPath(new URL('.', import.meta.url))
-
-export default antfu({
-  ignores: [
-    '.vscode/*.json',
-    `${dirName}/shims.d.ts`,
-  ],
+export default antfu({}, unocss, {
+  rules: {
+    'vue/max-attributes-per-line': [
+      'error',
+      {
+        singleline: {
+          max: 1,
+        },
+        multiline: {
+          max: 1,
+        },
+      },
+    ],
+  },
 })

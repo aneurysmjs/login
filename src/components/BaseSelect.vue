@@ -19,19 +19,32 @@ const defaultSelected = ref(props.options[0])
 </script>
 
 <template>
-  <Listbox v-model="defaultSelected" as="div">
-    <ListboxLabel v-if="props.label !== ''" class="base-select__label">
+  <Listbox
+    v-model="defaultSelected"
+    as="div"
+  >
+    <ListboxLabel
+      v-if="props.label !== ''"
+      class="base-select__label"
+    >
       {{ label }}
     </ListboxLabel>
     <div class="relative">
       <ListboxButton class="base-select__button">
         <span class="block truncate">{{ defaultSelected.value }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon
+            class="h-5 w-5 text-gray-400"
+            aria-hidden="true"
+          />
         </span>
       </ListboxButton>
 
-      <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <transition
+        leave-active-class="transition ease-in duration-100"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
         <ListboxOptions class="base-select__options">
           <ListboxOption
             v-for="option in props.options"
@@ -41,16 +54,27 @@ const defaultSelected = ref(props.options[0])
             :value="option"
           >
             <li
-              class="base-select__option" :class="{
+              class="base-select__option"
+              :class="{
                 'base-select__option--active': active,
               }"
             >
-              <span class="block truncate" :class="[selected ? 'font-semibold' : 'font-normal']">
+              <span
+                class="block truncate"
+                :class="[selected ? 'font-semibold' : 'font-normal']"
+              >
                 {{ option.value !== '' ? option.value : 'select some shit' }}
               </span>
 
-              <span v-if="selected" class="base-select__selected-icon" :class="[active ? 'text-white' : 'text-indigo-600']">
-                <CheckIcon class="h-5 w-5" aria-hidden="true" />
+              <span
+                v-if="selected"
+                class="base-select__selected-icon"
+                :class="[active ? 'text-white' : 'text-indigo-600']"
+              >
+                <CheckIcon
+                  class="h-5 w-5"
+                  aria-hidden="true"
+                />
               </span>
             </li>
           </ListboxOption>

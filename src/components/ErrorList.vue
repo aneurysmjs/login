@@ -15,7 +15,13 @@ const attrs = useAttrs()
       :key="error.$uid"
       class="mt-2"
     >
-      <span v-bind="attrs" class="error-list__message" role="alert">{{ error.$message }}</span>
+      <span
+        v-bind="attrs"
+        class="error-list__message"
+        role="alert"
+      >
+        {{ error.$message }}
+      </span>
     </li>
   </ul>
 </template>
