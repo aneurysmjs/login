@@ -3,6 +3,7 @@ import unocss from '@unocss/eslint-config/flat'
 
 export default antfu({}, unocss, {
   rules: {
+    // Vue
     'vue/max-attributes-per-line': [
       'error',
       {
@@ -14,5 +15,7 @@ export default antfu({}, unocss, {
         },
       },
     ],
+    // Style
+    'style/brace-style': 'off',
   },
 })
