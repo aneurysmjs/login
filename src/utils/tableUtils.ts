@@ -18,16 +18,15 @@ export function manageTableFilters(arr: ColumnFiltersState, newItem: ColumnFilte
 
   if (newItem.value === '' || (shouldRemove && shouldRemove(newItem))) {
     // Remove the item if its value is an empty string or the custom removal condition is met
-    if (existingItemIndex !== -1)
+    if (existingItemIndex !== -1) {
       arr.splice(existingItemIndex, 1)
-  }
-
-  else if (existingItemIndex !== -1) {
+    }
+  } else if (existingItemIndex !== -1) {
     // Update the item if it already exists with a different value
-    if (arr[existingItemIndex].value !== newItem.value)
+    if (arr[existingItemIndex].value !== newItem.value) {
       arr[existingItemIndex].value = newItem.value
-  }
-  else {
+    }
+  } else {
     // Add the item if it doesn't exist in the array
     arr.push(newItem)
   }

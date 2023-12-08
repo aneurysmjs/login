@@ -4,7 +4,7 @@ import { manageTableFilters } from '../src/utils/tableUtils'
 
 describe('tableUtils', () => {
   describe('manageTableFilters', () => {
-    let initialArray: { id: string; value: string }[]
+    let initialArray: { id: string, value: string }[]
 
     beforeEach(() => {
       initialArray = [
