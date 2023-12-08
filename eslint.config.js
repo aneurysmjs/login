@@ -3,6 +3,8 @@ import unocss from '@unocss/eslint-config/flat'
 
 export default antfu({}, unocss, {
   rules: {
+    // Eslint
+    'curly': 'off',
     // Vue
     'vue/max-attributes-per-line': [
       'error',
