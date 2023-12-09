@@ -1,287 +1,249 @@
-<script lang="ts">
-import type { PropType } from 'vue'
-import {
-  defineComponent,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  toRef,
-  toRefs,
-  watch,
-} from 'vue'
+<script lang="ts" setup>
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import type { CreateSingletonInstance, Instance } from 'tippy.js'
 import tippy, { createSingleton } from 'tippy.js'
-import type { CalendarItem, Locale, Month, TooltipFormatter, Value } from './heatmap'
-import { Heatmap } from './heatmap'
+import { type CalendarItem, Heatmap, type Locale, type Month, type TooltipFormatter, type Value } from './heatmap'
 
 import 'tippy.js/dist/tippy.css'
-
 import 'tippy.js/dist/svg-arrow.css'
 
-//
+interface VueCalendarHeatmap {
+  darkMode?: boolean
+  endDate: string | Date
+  max?: number
+  rangeColorValue?: string[]
+  values: Value[]
+  locale?: Partial<Locale>
+  tooltip?: boolean
+  tooltipUnit?: string
+  vertical?: boolean
+  tooltipFormatter?: TooltipFormatter
+  noDataText?: boolean | string
+  round?: number
+}
 
-// interface VueCalendarHeatmap {
-//   endDate: string
-//   max: number
-//   rangeColor: string[]
-//   values: Value[]
-//   locale: Partial<Locale>
-//   tooltip?: boolean
-//   tooltipUnit?: string
-//   vertical?: boolean
-//   tooltipFormatter: TooltipFormatter
-//   noDataText?: [boolean, string]
-//   round?: number
-//   darkMode?: boolean
-// }
+const {
+  tooltip = true,
+  tooltipUnit = Heatmap.DEFAULT_TOOLTIP_UNIT,
+  vertical = false,
+  noDataText = null,
+  round = 0,
+  darkMode = false,
+  endDate,
+  values,
+  max,
+  tooltipFormatter,
+  //
+  // rangeColor = darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT,
+  rangeColorValue,
+  locale,
+} = defineProps<VueCalendarHeatmap>()
 
-// const {
-//   tooltip = true,
-//   tooltipUnit = Heatmap.DEFAULT_TOOLTIP_UNIT,
-//   vertical = false,
-//   noDataText = null,
-//   round = 0,
-//   darkMode = false,
-// } = defineProps<VueCalendarHeatmap>()
-
-// const emit = defineEmits<{
-//   (e: 'change', id: number): void
-//   (e: 'update', value: string): void
-// }>()
+const emit = defineEmits<{
+  (evt: 'dayClick', value: CalendarItem): void
+}>()
 
 // emit('dayClick')
 
-export default /* #__PURE__ */defineComponent({
-  name: 'CalendarHeatmap',
-  props: {
-    endDate: {
-      required: true,
-    },
-    max: {
-      type: Number,
-    },
-    rangeColor: {
-      type: Array as PropType<string[]>,
-    },
-    values: {
-      type: Array as PropType<Value[]>,
-      required: true,
-    },
-    locale: {
-      type: Object as PropType<Partial<Locale>>,
-    },
-    tooltip: {
-      type: Boolean,
-      default: true,
-    },
-    tooltipUnit: {
-      type: String,
-      default: Heatmap.DEFAULT_TOOLTIP_UNIT,
-    },
-    tooltipFormatter: {
-      type: Function as PropType<TooltipFormatter>,
-    },
-    vertical: {
-      type: Boolean,
-      default: false,
-    },
-    noDataText: {
-      type: [Boolean, String],
-      default: null,
-    },
-    round: {
-      type: Number,
-      default: 0,
-    },
-    darkMode: Boolean,
-  },
-  emits: ['dayClick'],
-  setup(props) {
-    const SQUARE_BORDER_SIZE = Heatmap.SQUARE_SIZE / 5
-    const SQUARE_SIZE = Heatmap.SQUARE_SIZE + SQUARE_BORDER_SIZE
-    const LEFT_SECTION_WIDTH = Math.ceil(Heatmap.SQUARE_SIZE * 2.5)
-    const RIGHT_SECTION_WIDTH = SQUARE_SIZE * 3
-    const TOP_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + (Heatmap.SQUARE_SIZE / 2)
-    const BOTTOM_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + (Heatmap.SQUARE_SIZE / 2)
-    const yearWrapperTransform = `translate(${LEFT_SECTION_WIDTH}, ${TOP_SECTION_HEIGHT})`
+const SQUARE_BORDER_SIZE = Heatmap.SQUARE_SIZE / 5
+const SQUARE_SIZE = Heatmap.SQUARE_SIZE + SQUARE_BORDER_SIZE
+const LEFT_SECTION_WIDTH = Math.ceil(Heatmap.SQUARE_SIZE * 2.5)
+const RIGHT_SECTION_WIDTH = SQUARE_SIZE * 3
+const TOP_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + Heatmap.SQUARE_SIZE / 2
+const BOTTOM_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + Heatmap.SQUARE_SIZE / 2
+const yearWrapperTransform = `translate(${LEFT_SECTION_WIDTH}, ${TOP_SECTION_HEIGHT})`
 
-    const svg = ref<null | SVGElement>(null)
-    const now = ref(new Date())
-    const heatmap = ref(new Heatmap(props.endDate as Date, props.values, props.max))
+const svg = ref<null | SVGElement>(null)
+const now = ref(new Date())
+const heatmap = ref(new Heatmap(endDate, values, max))
 
-    const width = ref(0)
-    const height = ref(0)
-    const viewbox = ref('0 0 0 0')
-    const legendViewbox = ref('0 0 0 0')
-    const daysLabelWrapperTransform = ref('')
-    const monthsLabelWrapperTransform = ref('')
-    const legendWrapperTransform = ref('')
-    const lo = ref<Locale>({} as any)
-    const rangeColor = ref<string[]>(props.rangeColor || (props.darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))
+const width = ref(0)
+const height = ref(0)
+const viewbox = ref('0 0 0 0')
+const legendViewbox = ref('0 0 0 0')
+const daysLabelWrapperTransform = ref('')
+const monthsLabelWrapperTransform = ref('')
+const legendWrapperTransform = ref('')
+const lo = ref<Locale>({} as any)
+// const rangeColor = ref<string[]>(rangeColor || (darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))
+const rangeColor = rangeColorValue || darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT
 
-    const {
-      values,
-      tooltipUnit,
-      tooltipFormatter,
-      noDataText,
-      max,
-      vertical,
-      locale,
-    } = toRefs(props)
-    const tippyInstances = new Map<HTMLElement, Instance>()
+// const {
+//   values,
+//   tooltipUnit,
+//   tooltipFormatter,
+//   noDataText,
+//   max,
+//   vertical,
+//   locale,
+// } = toRefs(props)
+const tippyInstances = new Map<HTMLElement, Instance>()
 
-    let tippySingleton: CreateSingletonInstance
+let tippySingleton: CreateSingletonInstance
 
-    function initTippy() {
-      tippyInstances.clear()
-      if (tippySingleton) {
-        tippySingleton.setInstances(Array.from(tippyInstances.values()))
-      } else {
-        tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
-          overrides: [],
-          moveTransition: 'transform 0.1s ease-out',
-          allowHTML: true,
-        })
-      }
-    }
+function initTippy() {
+  tippyInstances.clear()
 
-    function tooltipOptions(day: CalendarItem) {
-      if (props.tooltip) {
-        if (day.count !== undefined) {
-          if (props.tooltipFormatter) {
-            return props.tooltipFormatter(day, props.tooltipUnit!)
-          }
-          return `<b>${day.count} ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[day.date.getMonth()]} ${day.date.getDate()}, ${day.date.getFullYear()}`
-        } else if (props.noDataText) {
-          return `${props.noDataText}`
-        } else if (props.noDataText !== false) {
-          return `<b>No ${props.tooltipUnit}</b> ${lo.value.on} ${lo.value.months[day.date.getMonth()]} ${day.date.getDate()}, ${day.date.getFullYear()}`
-        }
-      }
-      return undefined
-    }
-
-    function getWeekPosition(index: number) {
-      if (props.vertical) {
-        return `translate(0, ${(SQUARE_SIZE * heatmap.value.weekCount) - ((index + 1) * SQUARE_SIZE)})`
-      }
-      return `translate(${index * SQUARE_SIZE}, 0)`
-    }
-
-    function getDayPosition(index: number) {
-      if (props.vertical) {
-        return `translate(${index * SQUARE_SIZE}, 0)`
-      }
-      return `translate(0, ${index * SQUARE_SIZE})`
-    }
-
-    function getMonthLabelPosition(month: Month) {
-      if (props.vertical) {
-        return { x: 3, y: (SQUARE_SIZE * heatmap.value.weekCount) - (SQUARE_SIZE * (month.index)) - (SQUARE_SIZE / 4) }
-      }
-      return { x: SQUARE_SIZE * month.index, y: SQUARE_SIZE - SQUARE_BORDER_SIZE }
-    }
-
-    watch([toRef(props, 'rangeColor'), toRef(props, 'darkMode')], ([rc, dm]) => {
-      rangeColor.value = rc || (dm ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT)
+  if (tippySingleton) {
+    tippySingleton.setInstances(Array.from(tippyInstances.values()))
+  } else {
+    tippySingleton = createSingleton(Array.from(tippyInstances.values()), {
+      overrides: [],
+      moveTransition: 'transform 0.1s ease-out',
+      allowHTML: true,
     })
+  }
+}
 
-    watch(vertical, (v) => {
-      if (v) {
-        width.value = LEFT_SECTION_WIDTH + (SQUARE_SIZE * Heatmap.DAYS_IN_WEEK) + RIGHT_SECTION_WIDTH
-        height.value = TOP_SECTION_HEIGHT + (SQUARE_SIZE * heatmap.value.weekCount) + SQUARE_BORDER_SIZE
-        daysLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
-        monthsLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
-      } else {
-        width.value = LEFT_SECTION_WIDTH + (SQUARE_SIZE * heatmap.value.weekCount) + SQUARE_BORDER_SIZE
-        height.value = TOP_SECTION_HEIGHT + (SQUARE_SIZE * Heatmap.DAYS_IN_WEEK)
-        daysLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
-        monthsLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
+function tooltipOptions(day: CalendarItem) {
+  if (tooltip) {
+    if (day.count !== undefined) {
+      if (tooltipFormatter) {
+        return tooltipFormatter(day, tooltipUnit!)
       }
-    }, { immediate: true })
-
-    watch([width, height], ([w, h]) => (viewbox.value = ` 0 0 ${w} ${h}`), { immediate: true })
-
-    watch([width, height, rangeColor], ([w, h, rc]) => {
-      legendWrapperTransform.value = vertical.value
-        ? `translate(${LEFT_SECTION_WIDTH + (SQUARE_SIZE * Heatmap.DAYS_IN_WEEK)}, ${TOP_SECTION_HEIGHT})`
-        : `translate(${w - (SQUARE_SIZE * rc.length) - 30}, ${h - BOTTOM_SECTION_HEIGHT})`
-    }, { immediate: true })
-
-    watch(locale, l => (lo.value = l ? { ...Heatmap.DEFAULT_LOCALE, ...l } : Heatmap.DEFAULT_LOCALE), { immediate: true })
-    watch(rangeColor, rc => (legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`), { immediate: true })
-
-    watch(
-      [values, tooltipUnit, tooltipFormatter, noDataText, max, rangeColor],
-      () => {
-        heatmap.value = new Heatmap(props.endDate as Date, props.values, props.max)
-        tippyInstances.forEach(item => item.destroy())
-        nextTick(initTippy)
-      },
-    )
-
-    onMounted(initTippy)
-
-    onBeforeUnmount(() => {
-      tippySingleton?.destroy()
-      tippyInstances.forEach(item => item.destroy())
-    })
-
-    function initTippyLazy(e: MouseEvent) {
-      if (tippySingleton
-        && e.target
-        && (e.target as HTMLElement).classList.contains('vch__day__square')
-        && (e.target as HTMLElement).dataset.weekIndex !== undefined
-        && (e.target as HTMLElement).dataset.dayIndex !== undefined
-      ) {
-        const weekIndex = Number((e.target as HTMLElement).dataset.weekIndex)
-        const dayIndex = Number((e.target as HTMLElement).dataset.dayIndex)
-
-        if (!Number.isNaN(weekIndex) && !Number.isNaN(dayIndex)) {
-          const tooltip = tooltipOptions(heatmap.value.calendar[weekIndex][dayIndex])
-          if (tooltip) {
-            const instance = tippyInstances.get(e.target as HTMLElement)
-
-            if (instance) {
-              instance.setContent(tooltip)
-            } else if (!instance) {
-              tippyInstances.set(e.target as HTMLElement, tippy(e.target as HTMLElement, { content: tooltip } as any))
-              tippySingleton.setInstances(Array.from(tippyInstances.values()))
-            }
-          }
-        }
-      }
+      return `<b>${day.count} ${tooltipUnit}</b> ${lo.value.on} ${
+        lo.value.months[day.date.getMonth()]
+      } ${day.date.getDate()}, ${day.date.getFullYear()}`
+    } else if (noDataText) {
+      return `${noDataText}`
+    } else if (noDataText !== false) {
+      return `<b>No ${tooltipUnit}</b> ${lo.value.on} ${
+        lo.value.months[day.date.getMonth()]
+      } ${day.date.getDate()}, ${day.date.getFullYear()}`
     }
+  }
+  return undefined
+}
 
-    return {
-      SQUARE_BORDER_SIZE,
-      SQUARE_SIZE,
-      LEFT_SECTION_WIDTH,
-      RIGHT_SECTION_WIDTH,
-      TOP_SECTION_HEIGHT,
-      BOTTOM_SECTION_HEIGHT,
-      svg,
-      heatmap,
-      now,
-      width,
-      height,
-      viewbox,
-      daysLabelWrapperTransform,
-      monthsLabelWrapperTransform,
-      yearWrapperTransform,
-      legendWrapperTransform,
-      lo,
-      legendViewbox,
-      curRangeColor: rangeColor,
-      getWeekPosition,
-      getDayPosition,
-      getMonthLabelPosition,
-      initTippyLazy,
+function getWeekPosition(index: number) {
+  if (vertical) {
+    return `translate(0, ${SQUARE_SIZE * heatmap.value.weekCount - (index + 1) * SQUARE_SIZE})`
+  }
+  return `translate(${index * SQUARE_SIZE}, 0)`
+}
+
+function getDayPosition(index: number) {
+  if (vertical) {
+    return `translate(${index * SQUARE_SIZE}, 0)`
+  }
+  return `translate(0, ${index * SQUARE_SIZE})`
+}
+
+function getMonthLabelPosition(month: Month) {
+  if (vertical) {
+    return { x: 3, y: SQUARE_SIZE * heatmap.value.weekCount - SQUARE_SIZE * month.index - SQUARE_SIZE / 4 }
+  }
+  return { x: SQUARE_SIZE * month.index, y: SQUARE_SIZE - SQUARE_BORDER_SIZE }
+}
+
+// watch([toRef(props, 'rangeColor'), toRef(props, 'darkMode')], ([rc, dm]) => {
+//   rangeColor.value = rc || (dm ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT)
+// })
+
+// watch([rangeColor, darkMode], ([rc, dm]) => {
+//   rangeColor.value = rc || (dm ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT)
+// })
+
+watch(
+  () => vertical,
+  (v) => {
+    if (v) {
+      width.value = LEFT_SECTION_WIDTH + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK + RIGHT_SECTION_WIDTH
+      height.value = TOP_SECTION_HEIGHT + SQUARE_SIZE * heatmap.value.weekCount + SQUARE_BORDER_SIZE
+      daysLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
+      monthsLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
+    } else {
+      width.value = LEFT_SECTION_WIDTH + SQUARE_SIZE * heatmap.value.weekCount + SQUARE_BORDER_SIZE
+      height.value = TOP_SECTION_HEIGHT + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK
+      daysLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
+      monthsLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
     }
   },
+  { immediate: true },
+)
+
+watch(
+  [width, height],
+  ([w, h]) => {
+    viewbox.value = ` 0 0 ${w} ${h}`
+  },
+  { immediate: true },
+)
+
+watch(
+  [width, height, () => rangeColor],
+  ([w, h, rc]) => {
+    // legendWrapperTransform.value = vertical.value
+    legendWrapperTransform.value = vertical
+      ? `translate(${LEFT_SECTION_WIDTH + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK}, ${TOP_SECTION_HEIGHT})`
+      : `translate(${w - SQUARE_SIZE * rc.length - 30}, ${h - BOTTOM_SECTION_HEIGHT})`
+  },
+  { immediate: true },
+)
+
+watch(
+  () => locale,
+  (l) => {
+    lo.value = l ? { ...Heatmap.DEFAULT_LOCALE, ...l } : Heatmap.DEFAULT_LOCALE
+  },
+  { immediate: true },
+)
+
+watch(
+  () => rangeColor,
+  (rc) => {
+    legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`
+  },
+  { immediate: true },
+)
+
+watch([
+  () => values,
+  () => tooltipUnit,
+  () => tooltipFormatter,
+  () => noDataText,
+  () => max,
+  () => rangeColor,
+], () => {
+  heatmap.value = new Heatmap(endDate, values, max)
+  tippyInstances.forEach(item => item.destroy())
+  nextTick(initTippy)
 })
+
+onMounted(initTippy)
+
+onBeforeUnmount(() => {
+  tippySingleton?.destroy()
+  tippyInstances.forEach(item => item.destroy())
+})
+
+function initTippyLazy(evt: MouseEvent) {
+  if (
+    tippySingleton
+    && evt.target
+    && (evt.target as HTMLElement).classList.contains('vch__day__square')
+    && (evt.target as HTMLElement).dataset.weekIndex !== undefined
+    && (evt.target as HTMLElement).dataset.dayIndex !== undefined
+  ) {
+    const weekIndex = Number((evt.target as HTMLElement).dataset.weekIndex)
+    const dayIndex = Number((evt.target as HTMLElement).dataset.dayIndex)
+
+    if (!Number.isNaN(weekIndex) && !Number.isNaN(dayIndex)) {
+      const tooltip = tooltipOptions(heatmap.value.calendar[weekIndex][dayIndex])
+      if (tooltip) {
+        const instance = tippyInstances.get(evt.target as HTMLElement)
+
+        if (instance) {
+          instance.setContent(tooltip)
+        } else if (!instance) {
+          tippyInstances.set(evt.target as HTMLElement, tippy(evt.target as HTMLElement, { content: tooltip } as any))
+          tippySingleton.setInstances(Array.from(tippyInstances.values()))
+        }
+      }
+    }
+  }
+}
 </script>
 
 <template>
@@ -344,9 +306,11 @@ export default /* #__PURE__ */defineComponent({
         <text
           :x="SQUARE_SIZE * 1.25"
           y="8"
-        >{{ lo.less }}</text>
+        >
+          {{ lo.less }}
+        </text>
         <rect
-          v-for="(color, index) in curRangeColor"
+          v-for="(color, index) in rangeColor"
           :key="index"
           :rx="round"
           :ry="round"
@@ -358,7 +322,7 @@ export default /* #__PURE__ */defineComponent({
         />
         <text
           :x="SQUARE_SIZE * 1.25"
-          :y="SQUARE_SIZE * (curRangeColor.length + 2) - SQUARE_BORDER_SIZE"
+          :y="SQUARE_SIZE * (rangeColor.length + 2) - SQUARE_BORDER_SIZE"
         >
           {{ lo.more }}
         </text>
@@ -387,10 +351,10 @@ export default /* #__PURE__ */defineComponent({
               :transform="getDayPosition(dayIndex)"
               :width="SQUARE_SIZE - SQUARE_BORDER_SIZE"
               :height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
-              :style="{ fill: curRangeColor[day.colorIndex] }"
+              :style="{ fill: rangeColor[day.colorIndex] }"
               :data-week-index="weekIndex"
               :data-day-index="dayIndex"
-              @click="$emit('dayClick', day)"
+              @click="emit('dayClick', day)"
             />
           </template>
         </g>
@@ -413,7 +377,7 @@ export default /* #__PURE__ */defineComponent({
               >
                 <g class="vch__legend__wrapper">
                   <rect
-                    v-for="(color, index) in curRangeColor"
+                    v-for="(color, index) in rangeColor"
                     :key="index"
                     :rx="round"
                     :ry="round"
