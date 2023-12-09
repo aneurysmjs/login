@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { data } from './data'
+import type { CalendarItem } from './heatmap'
 
 // type Orientation = 'horizontal' | 'vertical'
 
@@ -9,6 +10,11 @@ const picked = 'Dings'
 // const orientation: Orientation = 'horizontal'
 
 const isVertical = false
+
+function handleDayClick(calendar: CalendarItem) {
+  // eslint-disable-next-line no-console
+  console.log(JSON.stringify(calendar, null, 2))
+}
 </script>
 
 <template>
@@ -22,6 +28,7 @@ const isVertical = false
       no-data-text="NIX"
       :tooltip-unit="picked"
       :vertical="isVertical"
+      @day-click="handleDayClick"
     />
   </div>
 </template>
