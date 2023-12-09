@@ -1,6 +1,6 @@
-import type { Value } from './heatmap'
+import type { HeatmapValue } from './heatmap'
 
-export const data: Value[] = [
+export const data: HeatmapValue[] = [
   {
     date: '2020-11-30T23:00:00Z',
     count: 635000,

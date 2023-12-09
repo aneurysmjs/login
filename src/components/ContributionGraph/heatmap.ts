@@ -1,4 +1,4 @@
-export interface Value {
+export interface HeatmapValue {
   date: Date | string
   count: number
 }
@@ -59,19 +59,19 @@ export class Heatmap {
   endDate: Date
   max: number
 
-  private _values: Value[]
+  private _values: HeatmapValue[]
   private _firstFullWeekOfMonths?: Month[]
   private _activities?: Activities
   private _calendar?: Calendar
 
-  constructor(endDate: Date | string, values: Value[], max?: number) {
+  constructor(endDate: Date | string, values: HeatmapValue[], max?: number) {
     this.endDate = this.parseDate(endDate)
     this.max = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4)
     this.startDate = this.shiftDate(endDate, -Heatmap.DAYS_IN_ONE_YEAR)
     this._values = values
   }
 
-  set values(v: Value[]) {
+  set values(v: HeatmapValue[]) {
     this.max = Math.ceil((Math.max(...v.map(day => day.count)) / 5) * 4)
     this._values = v
     this._firstFullWeekOfMonths = undefined
@@ -79,7 +79,7 @@ export class Heatmap {
     this._activities = undefined
   }
 
-  get values(): Value[] {
+  get values(): HeatmapValue[] {
     return this._values
   }
 
