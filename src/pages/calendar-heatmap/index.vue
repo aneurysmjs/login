@@ -4,7 +4,7 @@
 
 <template>
   <div class="calendar-heatmap-view">
-    <GithubContributionGraph />
+    <Playground />
   </div>
 </template>
 

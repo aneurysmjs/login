@@ -12,12 +12,16 @@ declare module 'vue' {
     BaseSelect: typeof import('./src/components/BaseSelect.vue')['default']
     BaseTable: typeof import('./src/components/BaseTable.vue')['default']
     CalendarHeatmap: typeof import('./src/components/ContributionGraph/CalendarHeatmap.vue')['default']
+    Dummy: typeof import('./src/components/ContributionGraph/Dummy.vue')['default']
     ErrorList: typeof import('./src/components/ErrorList.vue')['default']
     GithubContributionGraph: typeof import('./src/components/ContributionGraph/GithubContributionGraph.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
+    Playground: typeof import('./src/components/ContributionGraph/Playground.vue')['default']
     ResizeHandle: typeof import('./src/components/ResizeHandle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheFooter: typeof import('./src/components/TheFooter.vue')['default']
+    VueCalendarHeatmap: typeof import('./src/components/ContributionGraph/VueCalendarHeatmap.vue')['default']
+    VueCalendatHeatmap: typeof import('./src/components/ContributionGraph/VueCalendatHeatmap.vue')['default']
   }
 }

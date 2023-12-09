@@ -30,6 +30,7 @@
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
     "lodash.debounce": "^4.0.8",
+    "tippy.js": "^6.3.7",
     "vee-validate": "^4.12.2",
     "vue": "3.3.11",
     "vue-router": "4.2.5"
