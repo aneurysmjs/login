@@ -12,6 +12,7 @@ declare module 'vue' {
     BaseSelect: typeof import('./src/components/BaseSelect.vue')['default']
     BaseTable: typeof import('./src/components/BaseTable.vue')['default']
     CalendarHeatmap: typeof import('./src/components/ContributionGraph/CalendarHeatmap.vue')['default']
+    copy: typeof import('./src/components/ContributionGraph/VueCalendarHeatmap copy.vue')['default']
     Dummy: typeof import('./src/components/ContributionGraph/Dummy.vue')['default']
     ErrorList: typeof import('./src/components/ErrorList.vue')['default']
     GithubContributionGraph: typeof import('./src/components/ContributionGraph/GithubContributionGraph.vue')['default']
@@ -22,6 +23,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TheFooter: typeof import('./src/components/TheFooter.vue')['default']
     VueCalendarHeatmap: typeof import('./src/components/ContributionGraph/VueCalendarHeatmap.vue')['default']
+    VueCalendarHeatmap_ORIGINAL: typeof import('./src/components/ContributionGraph/VueCalendarHeatmap_ORIGINAL.vue')['default']
+    VueCalendarHeatmapORIGINAL: typeof import('./src/components/ContributionGraph/VueCalendarHeatmapORIGINAL.vue')['default']
     VueCalendatHeatmap: typeof import('./src/components/ContributionGraph/VueCalendatHeatmap.vue')['default']
   }
 }
