@@ -3,12 +3,24 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import type { CreateSingletonInstance, Instance } from 'tippy.js'
 import tippy, { createSingleton } from 'tippy.js'
-import { type CalendarItem, Heatmap, type HeatmapValue, type Locale, type Month, type TooltipFormatter } from './heatmap'
+import {
+  type CalendarItem,
+  DAYS_IN_ONE_YEAR,
+  DAYS_IN_WEEK,
+  DEFAULT_LOCALE,
+  DEFAULT_RANGE_COLOR_DARK,
+  DEFAULT_RANGE_COLOR_LIGHT,
+  DEFAULT_SQUARE_SIZE,
+  DEFAULT_TOOLTIP_UNIT,
+  type HeatmapValue,
+  type Locale,
+  type Month,
+  type TooltipFormatter,
+  createHeatmap,
+} from './heatmapUtils'
 
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/dist/svg-arrow.css'
-
-import { createHeatmap } from './heatmapUtils'
 
 interface VueCalendarHeatmap {
   darkMode?: boolean
@@ -63,7 +75,7 @@ interface VueCalendarHeatmap {
 
 const {
   tooltip = true,
-  tooltipUnit = Heatmap.DEFAULT_TOOLTIP_UNIT,
+  tooltipUnit = DEFAULT_TOOLTIP_UNIT,
   vertical = false,
   noDataText = null,
   round = 0,
@@ -73,7 +85,6 @@ const {
   max,
   tooltipFormatter,
   //
-  // rangeColor = darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT,
   rangeColorValue,
   locale,
 } = defineProps<VueCalendarHeatmap>()
@@ -82,17 +93,16 @@ const emit = defineEmits<{
   (evt: 'dayClick', value: CalendarItem): void
 }>()
 
-const SQUARE_BORDER_SIZE = Heatmap.SQUARE_SIZE / 5
-const SQUARE_SIZE = Heatmap.SQUARE_SIZE + SQUARE_BORDER_SIZE
-const LEFT_SECTION_WIDTH = Math.ceil(Heatmap.SQUARE_SIZE * 2.5)
+const SQUARE_BORDER_SIZE = DEFAULT_SQUARE_SIZE / 5
+const SQUARE_SIZE = DEFAULT_SQUARE_SIZE + SQUARE_BORDER_SIZE
+const LEFT_SECTION_WIDTH = Math.ceil(DEFAULT_SQUARE_SIZE * 2.5)
 const RIGHT_SECTION_WIDTH = SQUARE_SIZE * 3
-const TOP_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + Heatmap.SQUARE_SIZE / 2
-const BOTTOM_SECTION_HEIGHT = Heatmap.SQUARE_SIZE + Heatmap.SQUARE_SIZE / 2
+const TOP_SECTION_HEIGHT = DEFAULT_SQUARE_SIZE + DEFAULT_SQUARE_SIZE / 2
+const BOTTOM_SECTION_HEIGHT = DEFAULT_SQUARE_SIZE + DEFAULT_SQUARE_SIZE / 2
 const yearWrapperTransform = `translate(${LEFT_SECTION_WIDTH}, ${TOP_SECTION_HEIGHT})`
 
-const svg = ref<null | SVGElement>(null)
+const svgRef = ref<null | SVGElement>(null)
 const now = ref(new Date())
-// const heatmap = ref(new Heatmap(endDate, values, max))
 const heatmap = ref(createHeatmap(endDate, values, max))
 
 const width = ref(0)
@@ -103,18 +113,8 @@ const daysLabelWrapperTransform = ref('')
 const monthsLabelWrapperTransform = ref('')
 const legendWrapperTransform = ref('')
 const lo = ref<Locale>({} as any)
-// const rangeColor = ref<string[]>(rangeColor || (darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT))
-const rangeColor = rangeColorValue || darkMode ? Heatmap.DEFAULT_RANGE_COLOR_DARK : Heatmap.DEFAULT_RANGE_COLOR_LIGHT
+const rangeColor = rangeColorValue || darkMode ? DEFAULT_RANGE_COLOR_DARK : DEFAULT_RANGE_COLOR_LIGHT
 
-// const {
-//   values,
-//   tooltipUnit,
-//   tooltipFormatter,
-//   noDataText,
-//   max,
-//   vertical,
-//   locale,
-// } = toRefs(props)
 const tippyInstances = new Map<HTMLElement, Instance>()
 
 let tippySingleton: CreateSingletonInstance
@@ -139,6 +139,7 @@ function tooltipOptions(day: CalendarItem) {
       if (tooltipFormatter) {
         return tooltipFormatter(day, tooltipUnit!)
       }
+
       return `<b>${day.count} ${tooltipUnit}</b> ${lo.value.on} ${
         lo.value.months[day.date.getMonth()]
       } ${day.date.getDate()}, ${day.date.getFullYear()}`
@@ -192,13 +193,13 @@ watch(
   () => vertical,
   (v) => {
     if (v) {
-      width.value = LEFT_SECTION_WIDTH + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK + RIGHT_SECTION_WIDTH
+      width.value = LEFT_SECTION_WIDTH + SQUARE_SIZE * DAYS_IN_WEEK + RIGHT_SECTION_WIDTH
       height.value = TOP_SECTION_HEIGHT + SQUARE_SIZE * heatmap.value.weekCount + SQUARE_BORDER_SIZE
       daysLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
       monthsLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
     } else {
       width.value = LEFT_SECTION_WIDTH + SQUARE_SIZE * heatmap.value.weekCount + SQUARE_BORDER_SIZE
-      height.value = TOP_SECTION_HEIGHT + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK
+      height.value = TOP_SECTION_HEIGHT + SQUARE_SIZE * DAYS_IN_WEEK
       daysLabelWrapperTransform.value = `translate(0, ${TOP_SECTION_HEIGHT})`
       monthsLabelWrapperTransform.value = `translate(${LEFT_SECTION_WIDTH}, 0)`
     }
@@ -217,9 +218,8 @@ watch(
 watch(
   [width, height, () => rangeColor],
   ([w, h, rc]) => {
-    // legendWrapperTransform.value = vertical.value
     legendWrapperTransform.value = vertical
-      ? `translate(${LEFT_SECTION_WIDTH + SQUARE_SIZE * Heatmap.DAYS_IN_WEEK}, ${TOP_SECTION_HEIGHT})`
+      ? `translate(${LEFT_SECTION_WIDTH + SQUARE_SIZE * DAYS_IN_WEEK}, ${TOP_SECTION_HEIGHT})`
       : `translate(${w - SQUARE_SIZE * rc.length - 30}, ${h - BOTTOM_SECTION_HEIGHT})`
   },
   { immediate: true },
@@ -228,7 +228,7 @@ watch(
 watch(
   () => locale,
   (l) => {
-    lo.value = l ? { ...Heatmap.DEFAULT_LOCALE, ...l } : Heatmap.DEFAULT_LOCALE
+    lo.value = l ? { ...DEFAULT_LOCALE, ...l } : DEFAULT_LOCALE
   },
   { immediate: true },
 )
@@ -236,7 +236,7 @@ watch(
 watch(
   () => rangeColor,
   (rc) => {
-    legendViewbox.value = `0 0 ${Heatmap.SQUARE_SIZE * (rc.length + 1)} ${Heatmap.SQUARE_SIZE}`
+    legendViewbox.value = `0 0 ${DEFAULT_SQUARE_SIZE * (rc.length + 1)} ${DEFAULT_SQUARE_SIZE}`
   },
   { immediate: true },
 )
@@ -249,7 +249,6 @@ watch([
   () => max,
   () => rangeColor,
 ], () => {
-  // heatmap.value = new Heatmap(endDate, values, max)
   heatmap.value = createHeatmap(endDate, values, max)
   tippyInstances.forEach(item => item.destroy())
   nextTick(initTippy)
@@ -274,7 +273,6 @@ function initTippyLazy(evt: MouseEvent) {
     const dayIndex = Number((evt.target as HTMLElement).dataset.dayIndex)
 
     if (!Number.isNaN(weekIndex) && !Number.isNaN(dayIndex)) {
-      // const tooltip = tooltipOptions(heatmap.value.calendar[weekIndex][dayIndex])
       const tooltip = tooltipOptions(heatmap.value.getCalendar()[weekIndex][dayIndex])
       if (tooltip) {
         const instance = tippyInstances.get(evt.target as HTMLElement)
@@ -297,7 +295,7 @@ function initTippyLazy(evt: MouseEvent) {
     :class="{ 'dark-mode': darkMode }"
   >
     <svg
-      ref="svg"
+      ref="svgRef"
       class="vch__wrapper"
       :viewBox="viewbox"
     >
@@ -305,15 +303,6 @@ function initTippyLazy(evt: MouseEvent) {
         class="vch__months__labels__wrapper"
         :transform="monthsLabelWrapperTransform"
       >
-        <!-- <text
-          v-for="(month, index) in heatmap.firstFullWeekOfMonths"
-          :key="index"
-          class="vch__month__label"
-          :x="getMonthLabelPosition(month).x"
-          :y="getMonthLabelPosition(month).y"
-        >
-          {{ lo.months[ month.value ] }}
-        </text> -->
         <text
           v-for="(month, index) in heatmap.getFirstFullWeekOfMonths()"
           :key="index"
@@ -387,31 +376,6 @@ function initTippyLazy(evt: MouseEvent) {
         :transform="yearWrapperTransform"
         @mouseover="initTippyLazy"
       >
-        <!-- <g
-          v-for="(week, weekIndex) in heatmap.calendar"
-          :key="weekIndex"
-          class="vch__month__wrapper"
-          :transform="getWeekPosition(weekIndex)"
-        >
-          <template
-            v-for="(day, dayIndex) in week"
-            :key="dayIndex"
-          >
-            <rect
-              v-if="day.date < now"
-              class="vch__day__square"
-              :rx="round"
-              :ry="round"
-              :transform="getDayPosition(dayIndex)"
-              :width="SQUARE_SIZE - SQUARE_BORDER_SIZE"
-              :height="SQUARE_SIZE - SQUARE_BORDER_SIZE"
-              :style="{ fill: rangeColor[day.colorIndex] }"
-              :data-week-index="weekIndex"
-              :data-day-index="dayIndex"
-              @click="emit('dayClick', day)"
-            />
-          </template>
-        </g> -->
         <g
           v-for="(week, weekIndex) in heatmap.getCalendar()"
           :key="weekIndex"
@@ -433,6 +397,7 @@ function initTippyLazy(evt: MouseEvent) {
               :style="{ fill: rangeColor[day.colorIndex] }"
               :data-week-index="weekIndex"
               :data-day-index="dayIndex"
+              :data-date="day.date"
               @click="emit('dayClick', day)"
             />
           </template>
@@ -474,7 +439,6 @@ function initTippyLazy(evt: MouseEvent) {
       </slot>
     </div>
   </div>
-  <!-- {{ heatmap.firstFullWeekOfMonths }} -->
 </template>
 
 <style>
