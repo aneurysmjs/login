@@ -5,7 +5,6 @@ import type { CreateSingletonInstance, Instance } from 'tippy.js'
 import tippy, { createSingleton } from 'tippy.js'
 import {
   type CalendarItem,
-  DAYS_IN_ONE_YEAR,
   DAYS_IN_WEEK,
   DEFAULT_LOCALE,
   DEFAULT_RANGE_COLOR_DARK,
@@ -29,10 +28,15 @@ interface VueCalendarHeatmap {
    * The calendar will start automatically one year before this date.
    */
   endDate: string | Date
+  locale?: Partial<Locale>
   /**
    * Any number which should be the max color.
    */
   max?: number
+  /**
+   * Tooltip text to display on days without data. null by default (shows no tooltip at all).
+   */
+  noDataText?: boolean | string
   /**
    * Array of strings which represents the colors of the progression.
    *
@@ -42,35 +46,30 @@ interface VueCalendarHeatmap {
    */
   rangeColorValue?: string[]
   /**
-   * Array of objects with date and count keys. date values can be a date parseable string, a millisecond timestamp,
-   * or a Date object. count value should be a number.
+   * Number to create rounded corners or circles in heatmap.
    */
-  values: HeatmapValue[]
-  locale?: Partial<Locale>
+  round?: number
   /**
    * enable/disable tooltip on square hover. true by default.
    */
   tooltip?: boolean
   /**
-   * String representing heatmap's unit of measure. Value is "contributions" by default.
-   */
-  tooltipUnit?: string
-  /**
-   * switch to vertical mode. false by default.
-   */
-  vertical?: boolean
-  /**
    * A method to have full control about tooltip content.
    */
   tooltipFormatter?: TooltipFormatter
   /**
-   * Tooltip text to display on days without data. null by default (shows no tooltip at all).
+   * String representing heatmap's unit of measure. Value is "contributions" by default.
    */
-  noDataText?: boolean | string
+  tooltipUnit?: string
   /**
-   * Number to create rounded corners or circles in heatmap.
+   * Array of objects with date and count keys. date values can be a date parseable string, a millisecond timestamp,
+   * or a Date object. count value should be a number.
    */
-  round?: number
+  values: HeatmapValue[]
+  /**
+   * switch to vertical mode. false by default.
+   */
+  vertical?: boolean
 }
 
 const {
