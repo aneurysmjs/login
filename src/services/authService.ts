@@ -5,14 +5,14 @@ const BASE_URL_API = 'https://dummyjson.com'
 
 // just dummy data
 export interface User {
-  id: number
-  username: string
   email: string
-  password: string
-  lastName: string
   gender: string
+  id: number
   image: string
+  lastName: string
+  password: string
   token: string
+  username: string
 }
 
 export async function login() {

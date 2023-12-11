@@ -6,10 +6,10 @@ import {
 import useTableUtils from '~/composables/useTableUtils'
 
 interface BaseTableProps {
-  table: Table<T>
-  fullWidth?: boolean
   columnSizing?: boolean
+  fullWidth?: boolean
   stripped?: boolean
+  table: Table<T>
 }
 
 const {

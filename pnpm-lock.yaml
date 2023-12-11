@@ -96,6 +96,9 @@ devDependencies:
   eslint:
     specifier: 8.55.0
     version: 8.55.0
+  eslint-plugin-perfectionist:
+    specifier: ^2.5.0
+    version: 2.5.0(eslint@8.55.0)(typescript@5.3.3)(vue-eslint-parser@9.3.2)
   jsdom:
     specifier: 23.0.1
     version: 23.0.1

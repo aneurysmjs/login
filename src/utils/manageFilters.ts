@@ -2,10 +2,10 @@ import type { Ref } from 'vue'
 import type { ColumnFilter } from '@tanstack/vue-table'
 
 interface ManageFiltersOptions {
-  id: string
-  value: string
   columnFilters: Ref<ColumnFilter[]>
+  id: string
   resetValue?: string
+  value: string
 }
 
 export default function manageFilters({

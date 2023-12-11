@@ -2,12 +2,12 @@ import { type Ref, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 
 export interface Person {
+  age: number
   firstName: string
   lastName: string
-  age: number
-  visits: number
-  status: string
   progress: number
+  status: string
+  visits: number
 }
 
 const defaultData: Person[] = [

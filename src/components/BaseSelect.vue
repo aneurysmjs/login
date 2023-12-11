@@ -9,8 +9,8 @@ interface Option {
 }
 
 interface BaseSelectProps {
-  options: Option[]
   label?: string
+  options: Option[]
 }
 
 const props = defineProps<BaseSelectProps>()
