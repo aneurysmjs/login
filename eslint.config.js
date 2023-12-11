@@ -1,7 +1,11 @@
 import antfu from '@antfu/eslint-config'
 import unocss from '@unocss/eslint-config/flat'
+import perfectionist from 'eslint-plugin-perfectionist'
 
 export default antfu({}, unocss, {
+  plugins: {
+    perfectionist,
+  },
   rules: {
     // Eslint
     'curly': 'off',
@@ -19,5 +23,7 @@ export default antfu({}, unocss, {
     ],
     // Style
     'style/brace-style': 'off',
+    // Perfectionist
+    'perfectionist/sort-interfaces': 'error',
   },
 })
