@@ -112,7 +112,7 @@ const daysLabelWrapperTransform = ref('')
 const monthsLabelWrapperTransform = ref('')
 const legendWrapperTransform = ref('')
 const lo = ref<Locale>({} as any)
-const rangeColor = rangeColorValue || darkMode ? DEFAULT_RANGE_COLOR_DARK : DEFAULT_RANGE_COLOR_LIGHT
+const rangeColor = (rangeColorValue || (darkMode ? DEFAULT_RANGE_COLOR_DARK : DEFAULT_RANGE_COLOR_LIGHT))
 
 const tippyInstances = new Map<HTMLElement, Instance>()
 
