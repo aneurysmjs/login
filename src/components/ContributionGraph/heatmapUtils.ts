@@ -1,34 +1,36 @@
 export interface HeatmapValue {
-  date: Date | string
   count: number
+  date: Date | string
 }
 
 export interface Activity {
-  count: number
   colorIndex: number
+  count: number
 }
 
 export type Activities = Map<string, Activity>
 
 export interface CalendarItem {
-  date: Date
-  count?: number
   colorIndex: number
+  count?: number
+  date: Date
+  dayIndex: number
+  weekIndex: number
 }
 
 export type Calendar = CalendarItem[][]
 
 export interface Month {
-  value: number
   index: number
+  value: number
 }
 
 export interface Locale {
-  months: string[]
   days: string[]
-  on: string
   less: string
+  months: string[]
   more: string
+  on: string
 }
 
 export type TooltipFormatter = (item: CalendarItem, unit: string) => string
@@ -49,6 +51,26 @@ export const DEFAULT_SQUARE_SIZE = 10
 
 function parseDate(entry: Date | string) {
   return (entry instanceof Date) ? entry : (new Date(entry))
+}
+
+export interface ColorIndexParams {
+  count?: number
+  max: number
+}
+
+export type ColorIndexFn = (colorIndexParams: ColorIndexParams) => number
+
+export const getColorIndex: ColorIndexFn = ({ count, max }) => {
+  if (count === null || count === undefined) {
+    return 0
+  } else if (count <= 0) {
+    return 1
+  } else if (count >= max) {
+    return 5
+  } else {
+    // number between 2 and 4
+    return (Math.ceil(((count * 100) / max) * (0.03))) + 1
+  }
 }
 
 /**
@@ -114,21 +136,12 @@ export function createHeatmap(calendarEndDate: Date | string, calendarValues: He
   const startDate = shiftDate(endDate, -DAYS_IN_ONE_YEAR)
   // example of shifting only 6 months
   // const startDate = shiftDate(endDate, -(Math.round(DAYS_IN_ONE_YEAR / 2)))
+
+  // example of shifting by quarter
+  // const startDate = shiftDate(endDate, -(Math.round(DAYS_IN_ONE_YEAR / 4)))
   const values = structuredClone(calendarValues)
 
   const weekCount = getDaysCount() / DAYS_IN_WEEK
-
-  function getColorIndex(count?: number) {
-    if (count === null || count === undefined) {
-      return 0
-    } else if (count <= 0) {
-      return 1
-    } else if (count >= max) {
-      return 5
-    } else {
-      return (Math.ceil(((count * 100) / max) * (0.03))) + 1
-    }
-  }
 
   /**
    * gets the day of the week to start counting
@@ -207,14 +220,17 @@ export function createHeatmap(calendarEndDate: Date | string, calendarValues: He
 
   let activities: Activities
 
-  function makeActivities() {
+  function getActivities() {
     if (!activities) {
       activities = new Map<string, Activity>()
 
       for (let i = 0, len = values.length; i < len; i += 1) {
         activities.set(keyDayParser(values[i].date), {
           count: values[i].count,
-          colorIndex: getColorIndex(values[i].count),
+          colorIndex: getColorIndex({
+            count: values[i].count,
+            max,
+          }),
         })
       }
     }
@@ -241,13 +257,15 @@ export function createHeatmap(calendarEndDate: Date | string, calendarValues: He
         calendar[i] = Array.from({ length: DAYS_IN_WEEK })
 
         for (let j = 0; j < DAYS_IN_WEEK; j += 1) {
-          const dayValues = makeActivities().get(keyDayParser(date))
+          const dayValues = getActivities().get(keyDayParser(date))
 
           calendar![i][j] = {
             // The valueOf() method returns the number of milliseconds for this date
             date: new Date(date.valueOf()),
             count: dayValues ? dayValues.count : undefined,
             colorIndex: dayValues ? dayValues.colorIndex : 0,
+            weekIndex: i,
+            dayIndex: j,
           }
 
           date.setDate(date.getDate() + 1)
