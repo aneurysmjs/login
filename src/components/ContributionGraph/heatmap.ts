@@ -1,34 +1,34 @@
 export interface HeatmapValue {
-  date: Date | string
   count: number
+  date: Date | string
 }
 
 export interface Activity {
-  count: number
   colorIndex: number
+  count: number
 }
 
 export type Activities = Map<string, Activity>
 
 export interface CalendarItem {
-  date: Date
-  count?: number
   colorIndex: number
+  count?: number
+  date: Date
 }
 
 export type Calendar = CalendarItem[][]
 
 export interface Month {
-  value: number
   index: number
+  value: number
 }
 
 export interface Locale {
-  months: string[]
   days: string[]
-  on: string
   less: string
+  months: string[]
   more: string
+  on: string
 }
 
 export type TooltipFormatter = (item: CalendarItem, unit: string) => string
