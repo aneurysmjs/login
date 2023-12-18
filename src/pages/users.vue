@@ -101,7 +101,16 @@ onMounted(() => {
       stripped
       :table="table"
       column-sizing
-    />
+    >
+      <template #tableHeader="{ cells }">
+        <BaseTableHeaderCell
+          v-for="header in cells"
+          :key="header.id"
+          :header="header"
+        />
+      </template>
+    </BaseTable>
+
     <div class="h-4" />
     <button class="border p-2">
       Rerender
