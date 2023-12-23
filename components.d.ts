@@ -11,6 +11,7 @@ declare module 'vue' {
     BaseLoader: typeof import('./src/components/BaseLoader.vue')['default']
     BaseSelect: typeof import('./src/components/BaseSelect.vue')['default']
     BaseTable: typeof import('./src/components/BaseTable.vue')['default']
+    BaseTableHeaderCell: typeof import('./src/components/BaseTableHeaderCell.vue')['default']
     ErrorList: typeof import('./src/components/ErrorList.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     ResizeHandle: typeof import('./src/components/ResizeHandle.vue')['default']
