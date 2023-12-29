@@ -1,18 +1,20 @@
-import { type Ref, ref } from 'vue'
 import {
   type ColumnFiltersState,
   type FilterFn,
   type Updater,
+  type VisibilityState,
   createColumnHelper,
   filterFns,
   getCoreRowModel,
   getFilteredRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
+import { type Ref, ref } from 'vue'
 
 import type { Person } from '~/composables/useUserQueries'
-import { autoRemoveWhen } from '~/utils/tableUtils'
+
 import manageFilters from '~/utils/manageFilters'
+import { autoRemoveWhen } from '~/utils/tableUtils'
 
 const columnHelper = createColumnHelper<Person>()
 
@@ -38,9 +40,9 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
       minSize: 100,
     }),
     columnHelper.accessor(row => row.lastName, {
-      id: 'lastName',
       cell: info => info.getValue(),
       header: () => 'Last Name',
+      id: 'lastName',
       minSize: 100,
     }),
     columnHelper.accessor('age', {
@@ -50,16 +52,16 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
       header: () => 'Visits',
     }),
     columnHelper.accessor('status', {
-      header: 'Status',
       enableColumnFilter: true,
       // filterFn: 'equals',
       filterFn: filterStatus,
+      header: 'Status',
     }),
     columnHelper.accessor('progress', {
-      header: 'Profile Progress',
+      enableColumnFilter: true,
       filterFn: 'equals',
 
-      enableColumnFilter: true,
+      header: 'Profile Progress',
     }),
   ]
 
@@ -74,14 +76,14 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
   function handlerFilterStatus({ value }: { id: string, value: string }) {
     const id = 'status'
 
-    manageFilters({ id, value, columnFilters, resetValue: statuses[0].value })
+    manageFilters({ columnFilters, id, resetValue: statuses[0].value, value })
   }
 
   function handleFilterFirstName(evt: Event) {
     const id = 'firstName'
     const { value } = evt.target as HTMLInputElement
 
-    manageFilters({ id, value, columnFilters })
+    manageFilters({ columnFilters, id, value })
   }
 
   function handleColumnFiltersChange(updaterOrValue: Updater<ColumnFiltersState>) {
@@ -96,12 +98,16 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
     return filtersTableState
   }
 
+  const columnVisibility = ref<VisibilityState>({
+    visits: false,
+  })
+
   const table = useVueTable({
+    columnResizeMode: 'onChange',
+    columns,
     get data() {
       return users?.value || emptyArray.value
     },
-    columns,
-    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: handleColumnFiltersChange,
@@ -112,12 +118,15 @@ export default function useUserTables(users: Ref<Person[]> | Ref<undefined>) {
       get columnFilters() {
         return columnFilters.value
       },
+      get columnVisibility() {
+        return columnVisibility.value
+      },
     },
   })
 
   return {
-    table,
-    handlerFilterStatus,
     handleFilterFirstName,
+    handlerFilterStatus,
+    table,
   }
 }

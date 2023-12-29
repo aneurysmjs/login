@@ -33,55 +33,46 @@ const { getTableWidth } = useTableUtils()
       :style="getTableWidth<T>(table)"
     >
       <thead class="base-table__thead">
-        <tr
-          v-for="headerGroup in table.getHeaderGroups()"
-          :key="headerGroup.id"
+        <slot
+          name="tableHeader"
+          :cells="table.getHeaderGroups().map(hG => hG.headers).flat()"
         >
-          <th
-            v-for="header in headerGroup.headers"
-            :key="header.id"
-            :colSpan="header.colSpan"
-            scope="col"
-            class="base-table__th relative"
-            :class="[]"
-            :style="{
-              width: `${header.getSize()}px`,
-            }"
+          <tr
+            v-for="headerGroup in table.getHeaderGroups()"
+            :key="headerGroup.id"
           >
-            <FlexRender
-              v-if="!header.isPlaceholder"
-              :render="header.column.columnDef.header"
-              :props="header.getContext()"
-            />
-            <ResizeHandle
-              v-if="header.column.getCanResize()"
+            <BaseTableHeaderCell
+              v-for="header in headerGroup.headers"
+              :key="header.id"
               :header="header"
             />
-          </th>
-        </tr>
+          </tr>
+        </slot>
       </thead>
       <tbody>
-        <tr
-          v-for="row in table.getRowModel().rows"
-          :key="row.id"
-          :class="{
-            'base-table--stripped': stripped,
-          }"
-        >
-          <td
-            v-for="cell in row.getVisibleCells()"
-            :key="cell.id"
-            class="base-table__td"
-            :style=" {
-              width: `${cell.column.getSize()}px`,
+        <slot>
+          <tr
+            v-for="row in table.getRowModel().rows"
+            :key="row.id"
+            :class="{
+              'base-table--stripped': stripped,
             }"
           >
-            <FlexRender
-              :render="cell.column.columnDef.cell"
-              :props="cell.getContext()"
-            />
-          </td>
-        </tr>
+            <td
+              v-for="cell in row.getVisibleCells()"
+              :key="cell.id"
+              class="base-table__td"
+              :style=" {
+                width: `${cell.column.getSize()}px`,
+              }"
+            >
+              <FlexRender
+                :render="cell.column.columnDef.cell"
+                :props="cell.getContext()"
+              />
+            </td>
+          </tr>
+        </slot>
       </tbody>
     </table>
   </div>
