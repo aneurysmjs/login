@@ -21,12 +21,12 @@ export default defineConfig({
       /* options */
     }),
     vue({
-      reactivityTransform: true,
       script: {
         // This feature is experimental and requires explicit opt-in.
         // https://github.com/vuejs/rfcs/discussions/502
         propsDestructure: true,
-        defineModel: true,
+        // starting from vue.3.4.0, defineModel is already stable
+        // defineModel: true,
       },
     }),
 
