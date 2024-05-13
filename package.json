@@ -38,6 +38,7 @@
     "@antfu/eslint-config": "2.17.0",
     "@iconify-json/carbon": "1.1.33",
     "@iconify-json/svg-spinners": "^1.1.2",
+    "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/vue": "^8.0.3",
     "@tsconfig/node18": "^18.2.4",
     "@types/lodash.debounce": "^4.0.9",

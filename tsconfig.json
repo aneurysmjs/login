@@ -7,6 +7,8 @@
     },
     "types": [
       "vite/client",
+      "vitest/globals",
+      "@testing-library/jest-dom",
       "unplugin-vue-router/client",
       "vite-plugin-vue-layouts/client"
     ]
