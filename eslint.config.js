@@ -1,10 +1,12 @@
 import antfu from '@antfu/eslint-config'
 import unocss from '@unocss/eslint-config/flat'
 import perfectionist from 'eslint-plugin-perfectionist'
+import eslintPluginReadableTailwind from 'eslint-plugin-readable-tailwind'
 
 export default antfu({}, unocss, {
   plugins: {
     perfectionist,
+    'readable-tailwind': eslintPluginReadableTailwind,
   },
   rules: {
     // Eslint
@@ -25,5 +27,12 @@ export default antfu({}, unocss, {
     'style/brace-style': 'off',
     // Perfectionist
     'perfectionist/sort-interfaces': 'error',
+    // readable-tailwind
+    // enable all recommended rules to warn
+    ...eslintPluginReadableTailwind.configs.warning.rules,
+    // enable all recommended rules to error
+    ...eslintPluginReadableTailwind.configs.error.rules,
+    //
+    'unocss/order': 'off',
   },
 })
