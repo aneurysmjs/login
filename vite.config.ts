@@ -53,6 +53,13 @@ export default defineConfig({
     // https://github.com/antfu/vite-plugin-components
     Components({
       dts: true,
+      exclude: [
+        /[\\/]node_modules[\\/]/,
+        /[\\/]\.git[\\/]/,
+        /[\\/]\.nuxt[\\/]/,
+        //
+        /\.test\.ts/,
+      ],
     }),
 
     // https://github.com/antfu/unocss
