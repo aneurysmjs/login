@@ -12,11 +12,15 @@ declare module 'vue' {
     BaseSelect: typeof import('./src/components/BaseSelect.vue')['default']
     BaseTable: typeof import('./src/components/BaseTable.vue')['default']
     BaseTableHeaderCell: typeof import('./src/components/BaseTableHeaderCell.vue')['default']
+    DummyInput: typeof import('./src/components/forms/DummyInput/DummyInput.vue')['default']
+    DummyInputDefineModel: typeof import('./src/components/forms/DummyInputDefineModel/DummyInputDefineModel.vue')['default']
     ErrorList: typeof import('./src/components/ErrorList.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     ResizeHandle: typeof import('./src/components/ResizeHandle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./src/components/Sidebar/Sidebar.vue')['default']
+    SidebarMobile: typeof import('./src/components/SidebarMobile/SidebarMobile.vue')['default']
     TheFooter: typeof import('./src/components/TheFooter.vue')['default']
   }
 }
